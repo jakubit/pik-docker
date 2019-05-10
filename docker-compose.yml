@@ -12,3 +12,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: "demo:1:1"
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
