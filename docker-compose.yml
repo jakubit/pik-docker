@@ -1,18 +1,52 @@
 version: '2'
 services:
   zookeeper:
+    container_name: zookeeper
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
-  kafka:
+  kafka0:
+    container_name: kafka0
     image: wurstmeister/kafka
+    depends_on:
+    - zookeeper
     ports:
-      - "9092:9092"
+    - "9092:9092"
+    expose:
+    - "9093"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_BROKER_ID: 0
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka0:9093,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: "demo:1:1"
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+  kafka1:
+    container_name: kafka1
+    image: wurstmeister/kafka
+    depends_on:
+    - zookeeper
+    ports:
+    - "9093:9093"
+    expose:
+    - "9094"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka1:9094,OUTSIDE://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9094,OUTSIDE://0.0.0.0:9093
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+  connector:
+    container_name: connector
+    image: jakubit/mongo-sink-connector
+    depends_on:
+      - kafka0
+      - kafka1
+    ports:
+      - "8083:8083"
   mongo:
+    container_name: mongo
     image: mongo
     ports:
       - "27017:27017"
