@@ -1,15 +1,15 @@
 {
-    "name":"mongo-connector-testTopic",
+    "name":"mongo-connector-pik-news",
     "config" :{
             "connector.class":"com.startapp.data.MongoSinkConnector",
             "tasks.max":"5",
             "db.host":"mongo",
             "db.port":"27017",
-            "db.name":"testdb",
-            "db.collections":"testcollection",
+            "db.name":"pik",
+            "db.collections":"news",
             "write.batch.enabled":"true",
             "write.batch.size":"200",
             "connect.use_schema":"false",
-            "topics":"testTopic"
+            "topics":"parsedMessages"
     }
 }
